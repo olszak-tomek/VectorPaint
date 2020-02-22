@@ -40,7 +40,7 @@
         <HBox prefHeight="40.0" prefWidth="600.0">
           <children>
             <Button mnemonicParsing="false" text="CLEAR" />
-            <Button mnemonicParsing="false" text="LOAD" />
+            <Button mnemonicParsing="false" onAction="#handleLoad" text="LOAD" />
             <Button mnemonicParsing="false" onAction="#handleSave" text="SAVE" />
           </children>
         </HBox>

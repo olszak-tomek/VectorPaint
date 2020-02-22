@@ -11,10 +11,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import pl.sda.rafal.zientara.vector.paint.shapes.Line;
-import pl.sda.rafal.zientara.vector.paint.shapes.Rectangle;
-import pl.sda.rafal.zientara.vector.paint.shapes.Shape;
-import pl.sda.rafal.zientara.vector.paint.shapes.Triangle;
+import pl.sda.rafal.zientara.vector.paint.io.SDAFileReader;
+import pl.sda.rafal.zientara.vector.paint.shapes.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +20,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Controller {
 
@@ -130,6 +129,12 @@ public class Controller {
                 return new Rectangle(startX, startY, endX, endY);
             case TRIANGLE:
                 return new Triangle(startX, startY, endX, endY);
+            case ELLIPSE:
+                return new Ellipse(startX, startY, endX, endY);
+                case CIRCLE:
+                return new Circle(startX, startY, endX, endY);
+            case STAR:
+                return new Star(startX, startY, endX, endY);
         }
     }
 
@@ -149,6 +154,7 @@ public class Controller {
         }
     }
 
+
     @FXML
     public void handleSave() {
         Optional<String> reduce = shapeList.stream()
@@ -166,9 +172,37 @@ public class Controller {
 
             if (file != null) {
                 saveTextToFile(reduce.get(), file);
+            } else {
+                //todo nie ma co zapisywać
             }
         }
     }
+
+    @FXML
+    public void handleLoad() {
+        FileChooser fileChooser = new FileChooser();
+
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("YOLO files (*.yolo)", "*.yolo");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        File file = fileChooser.showOpenDialog(new Stage());
+
+
+        if (file != null) {
+            ShapeFactory factory = new ShapeFactory();
+            SDAFileReader reader = new SDAFileReader(file);
+
+
+            shapeList = reader.readFile().stream()
+                    .filter(shape -> shape != null)
+                    .map(string -> factory.get(string))
+                    .filter(shape -> shape != null)
+                    .collect(Collectors.toList());
+
+            refreshCanvas();
+        }
+    }
+
 
     private void saveTextToFile(String content, File file) {
         try {
